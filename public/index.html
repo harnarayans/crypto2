@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Web site created using create-react-app"
+    />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <!--
+      manifest.json provides metadata used when your web app is installed on a
+      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+    <title>React App</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+	<div style="display: flex;align-items: center;justify-content: center;" id="display"></div>
+	<div style="display: flex;align-items: center;justify-content: center;" id="alert1Val"></div>
+	<div style="display: flex;align-items: center;justify-content: center;" id="alert2Val"></div>
+	<div style="display: flex;align-items: center;justify-content: center;" id="alert3Val"></div>
+	<audio id="alert1" src="alert1.mp3" preload="auto"></audio>
+	<audio id="alert2" src="alert2.mp3" preload="auto"></audio>
+	<audio id="alert3" src="alert3.mp3" preload="auto"></audio>
+	<script>
+  var cors_api_url = 'http://localhost:8080/';
+  var bin;
+  var wrx;
+  function doCORSRequest(options, printResult) {
+    var x = new XMLHttpRequest();
+    x.open(options.method, cors_api_url + options.url);
+    x.onload = x.onerror = function() {
+      printResult(
+        options.method + ' ' + options.url + '\n' +
+        x.status + ' ' + x.statusText + '\n\n' +
+        (x.responseText || '')
+      );
+    };
+    if (/^POST/i.test(options.method)) {
+      x.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    }
+    x.send(options.data);
+  }
+
+  // Bind event
+  function getWrx() {
+    var urlField = 'https://api.wazirx.com/api/v2/tickers';
+      doCORSRequest({
+        method: 'GET',
+        url: urlField
+      }, function printResult(result) {
+        wrx = JSON.parse(result.substr(50));
+		getBin();
+      });
+  };
+	var alertLevel1={0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0,10:0,11:0,12:0,13:0,14:0,15:0,16:0,17:0,18:0,19:0,20:0,21:0,22:0,23:0};
+	var alertLevel2={0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0,10:0,11:0,12:0,13:0,14:0,15:0,16:0,17:0,18:0,19:0,20:0,21:0,22:0,23:0};
+	var alertLevel3={0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0,10:0,11:0,12:0,13:0,14:0,15:0,16:0,17:0,18:0,19:0,20:0,21:0,22:0,23:0};
+
+  function getBin(handler) {
+    var urlField = 'https://api1.binance.com/api/v3/ticker/price';
+      doCORSRequest({
+        method: 'GET',
+        url: urlField
+      }, function printResult(result) {
+        bin = JSON.parse(result.substr(57));
+		updateResults();
+      });
+  }
+	const list = [{"code":"btc","name":"Bitcoin"},{"code":"bnb","name":"Binance Coin"},{"code":"wrx","name":"WazirX Token"},{"code":"zil","name":"Zilliqa"},{"code":"eth","name":"Ethereum"},{"code":"ada","name":"Cardano"},{"code":"link","name":"Chainlink"},{"code":"waves","name":"Waves"},{"code":"band","name":"Band Protocol"},{"code":"dgb","name":"DigiByte"},{"code":"doge","name":"Dogecoin"},{"code":"eos","name":"EOS"},{"code":"atom","name":"Cosmos"},{"code":"algo","name":"Algorand"},{"code":"uni","name":"Uniswap"},{"code":"xtz","name":"Tezos"},{"code":"hbar","name":"Hedera Hashgraph"},{"code":"enj","name":"Enjin"},{"code":"vet","name":"VeChain"},{"code":"dot","name":"Polkadot"},{"code":"ren","name":"REN"},{"code":"grs","name":"Groestlcoin"},{"code":"kava","name":"Kava"},{"code":"aave","name":"Aave"},{"code":"cos","name":"Contentos"},{"code":"inj","name":"Injective Protocol"},{"code":"sushi","name":"SushiSwap"},{"code":"dock","name":"Dock"},{"code":"avax","name":"Avalanche"},{"code":"iotx","name":"Iotx"},{"code":"aion","name":"AION"},{"code":"bnt","name":"Bancor"},{"code":"ksm","name":"Kusama"},{"code":"luna","name":"Terra"},{"code":"grt","name":"The Graph"},{"code":"ankr","name":"Ankr"},{"code":"xym","name":"Symbol"},{"code":"ckb","name":"Nervos Network"},{"code":"vib","name":"Viberate"},{"code":"gto","name":"Gifto"},{"code":"crv","name":"Curve DAO Token"},{"code":"dexe","name":"DeXe"},{"code":"etc","name":"Ethereum Classic"},{"code":"ftm","name":"Fantom"},{"code":"fil","name":"Filecoin"},{"code":"win","name":"WINk"},{"code":"sc","name":"Siacoin"},{"code":"cvc","name":"Civic"},{"code":"cake","name":"PancakeSwap"},{"code":"iost","name":"IOSToken"},{"code":"ftt","name":"FTX Token"},{"code":"ava","name":"Travala.com"},{"code":"xvg","name":"Verge"},{"code":"shib","name":"SHIBA INU"},{"code":"bzrx","name":"bZx Protocol"},{"code":"hnt","name":"Helium"},{"code":"kmd","name":"Komodo"},{"code":"ardr","name":"Ardor"},{"code":"rep","name":"Augur"},{"code":"blz","name":"Bluzelle"},{"code":"celr","name":"Celer Network"},{"code":"reef","name":"Reef"},{"code":"icp","name":"Internet Computer"},{"code":"btg","name":"Bitcoin Gold"},{"code":"bts","name":"BitShares"},{"code":"chr","name":"Chromia"},{"code":"firo","name":"Firo"},{"code":"gxs","name":"GXChain"},{"code":"hive","name":"Hive"},{"code":"jst","name":"JUST"},{"code":"lsk","name":"Lisk"},{"code":"loom","name":"Loom"},{"code":"iota","name":"MIOTA"},{"code":"mdx","name":"Mdex"},{"code":"pha","name":"Phala Network"},{"code":"rune","name":"THORChain"},{"code":"near","name":"NEAR Protocol"},{"code":"nas","name":"Nebulas"},{"code":"neo","name":"Neo"},{"code":"nbs","name":"New BitShares"},{"code":"oxt","name":"Orchid"},{"code":"qtum","name":"Qtum"},{"code":"rvn","name":"Ravencoin"},{"code":"steem","name":"Steem"},{"code":"strax","name":"Stratis"},{"code":"tomo","name":"Tomochain"},{"code":"wtc","name":"Waltonchain"},{"code":"ogn","name":"OriginToken"},{"code":"data","name":"Streamr DATAcoin"},{"code":"pnt","name":"pNetwork"},{"code":"poly","name":"Polymath"},{"code":"nkn","name":"NKN"},{"code":"dnt","name":"district0x"},{"code":"keep","name":"Keep Network"},{"code":"axs","name":"Axie infinity"},{"code":"alpha","name":"Alpha Finance Labs"},{"code":"alice","name":"MyNeighborAlice"},{"code":"xec","name":"eCash"},{"code":"perp","name":"Perpetual Protocol"},{"code":"qnt","name":"Quant"},{"code":"flow","name":"Flow"},{"code":"vgx","name":"Voyager Token"},{"code":"ar","name":"Arweave"},{"code":"ray","name":"Raydium"},{"code":"dodo","name":"DODO"},{"code":"mina","name":"Mina"},{"code":"clv","name":"Clover Finance"},{"code":"bake","name":"Bakery Token"},{"code":"stx","name":"Stacks"},{"code":"alpaca","name":"Alpaca Finance"},{"code":"nft","name":"APENFT"},{"code":"gno","name":"Gnosis"},{"code":"tlm","name":"Alien Worlds"},{"code":"audio","name":"Audius"},{"code":"skl","name":"SKALE Network"},{"code":"mbox","name":"MOBOX"},{"code":"dego","name":"Dego Finance"}];
+	function updateResults(){
+	var diff=[];
+	var out='';
+		list.forEach((e)=>{	
+			if(wrx[e.code+'inr']){
+				var binprice = bin.filter((b)=>{return b.symbol===e.code.toUpperCase()+'USDT'});
+				if(binprice.length>0){
+					var usdt = 100000/wrx['usdtinr'].last;
+					var binCoins = usdt/binprice[0].price;
+					var wrxSaleIN = parseInt(binCoins*wrx[e.code+'inr'].buy);
+					if(wrxSaleIN > 100000)
+					diff.push({'currency':e.code,'gain':wrxSaleIN-100000, 'source':'BIN'});
+				}
+			}
+		})
+		list.forEach((e)=>{	
+			if(wrx[e.code+'inr']){
+				var binprice = bin.filter((b)=>{return b.symbol===e.code.toUpperCase()+'USDT'});
+				if(binprice.length>0){
+					var wrxCoins = 100000/wrx[e.code+'inr'].sell;
+					var binVal = wrxCoins*binprice[0].price;
+					var wrxSaleIN = parseInt(binVal*wrx['usdtinr'].last);
+					if(wrxSaleIN > 100000)
+					diff.push({'currency':e.code,'gain':wrxSaleIN-100000, 'source':'WRX'});
+				}
+			}
+		})
+		diff.sort((a,b)=>{return b.gain - a.gain});
+		diff = diff.slice(0,10);
+		var time = new Date().getHours();
+		if(diff[0].gain>=4000){
+			alertLevel3[time] ++;
+			document.getElementById('alert3').play();
+			var arr = JSON.parse(localStorage.getItem('high'));
+			arr.push('cur':diff[0].currency,'gain':diff[0].gain, 'timestamp':new Date().toISOString());
+			localStorage.setItem('high',JSON.stringify(arr));
+		}else if(diff[0].gain>=3000){
+			alertLevel2[time] ++;
+			document.getElementById('alert2').play();
+			var arrm = JSON.parse(localStorage.getItem('high'));
+			arrm.push('cur':diff[0].currency,'gain':diff[0].gain, 'timestamp':new Date().toISOString());
+			localStorage.setItem('high',JSON.stringify(arrm));
+		}else if(diff[0].gain>=2000){
+			alertLevel1[time] ++;
+			document.getElementById('alert1').play();
+		}
+		var listEl = document.createElement("ul");
+		for (let i in diff) { var item = document.createElement("li"); 
+		item.innerHTML = `<div> ${diff[i].currency}    ${diff[i].gain}    ${diff[i].source}</div>`;	
+		listEl.appendChild(item); }
+		listEl.id='display';
+		document.getElementById('display').replaceWith(listEl);
+		
+		var freq = document.createElement("ul");
+		for (let i in alertLevel1) { var item1 = document.createElement("li"); 
+		item1.innerHTML = `<div> ${i} => ${alertLevel1[i]}  </div>`;	
+		freq.appendChild(item1); }
+		freq.id='alert1Val';
+		document.getElementById('alert1Val').replaceWith(freq); 
+		
+		var freq2 = document.createElement("ul");
+		for (let i in alertLevel2) { var item2 = document.createElement("li"); 
+		item2.innerHTML = `<div> ${i} => ${alertLevel2[i]}  </div>`;	
+		freq2.appendChild(item2); }
+		freq2.id='alert2Val';
+		document.getElementById('alert2Val').replaceWith(freq2); 
+		
+		var freq3 = document.createElement("ul");
+		for (let i in alertLevel3) { var item3 = document.createElement("li"); 
+		item3.innerHTML = `<div> ${i} => ${alertLevel3[i]}  </div>`;	
+		freq3.appendChild(item3); }
+		freq3.id='alert3Val';
+		document.getElementById('alert3Val').replaceWith(freq3); 
+	}
+	function repeat(){
+		getWrx();
+	}
+	setInterval(repeat,5000);
+  
+</script>
+</body>
+    <!--
+      This HTML file is a template.
+      If you open it directly in the browser, you will see an empty page.
+
+      You can add webfonts, meta tags, or analytics to this file.
+      The build step will place the bundled scripts into the <body> tag.
+
+      To begin the development, run `npm start` or `yarn start`.
+      To create a production bundle, use `npm run build` or `yarn build`.
+    -->
+  </body>
+</html>
